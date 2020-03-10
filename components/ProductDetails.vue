@@ -8,13 +8,14 @@
     <v-card class="text-center">
       <v-card-title>
         <span>{{ product.name }} -</span>
+        <v-spacer></v-spacer>
         <span class="green--text">${{ product.price.formatted }}</span>
       </v-card-title>
 
       <v-divider></v-divider>
 
       <v-card-text class="mt-5 mb-5">
-        {{ product.description }}
+        {{ strippedDesc }}
       </v-card-text>
 
       <v-divider></v-divider>
@@ -40,6 +41,15 @@ export default {
     dialog: {
       type: Boolean,
       default: false
+    }
+  },
+  computed: {
+    strippedDesc() {
+      let str = this.product.description
+      if (str === '') return
+
+      str = str.toString()
+      return str.replace(/(<([^>]+)>)/gi, '')
     }
   },
   methods: {

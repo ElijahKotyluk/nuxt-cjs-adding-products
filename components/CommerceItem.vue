@@ -66,6 +66,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import ProductDetails from './ProductDetails'
 
 export default {
@@ -90,11 +91,9 @@ export default {
     showDetails: false
   }),
   methods: {
-    addToCart() {
-      this.$store.dispatch('addProductToCart', {
-        id: this.product.id
-      })
-    },
+    ...mapActions({
+      addToCart: 'addProductToCart'
+    }),
     closeDialog() {
       this.showDetails = false
     },
