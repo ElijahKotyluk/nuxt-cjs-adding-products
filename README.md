@@ -8,10 +8,10 @@ This guide illustrates how to create and add products to your cart using Nuxt.
 
 * This guide uses v2 of the Commerce.js SDK
 
-![](assets/CommerceJS_NuxtJS_Storefront.png)
+![](https://i.imgur.com/57LyKP3.png)
 
 ## Overview
-If you followed the previous guide you created a Nuxt application using `create-nuxt-app`, where you also created a Nuxt plugin for the Commerce.js SDK, and used that plugin to get your products and render them server-side by using the `nuxtServerInit` action. This guide is going to build off of the previous one and demonstrate how to use the following cart methods; `cart.add()`, `cart.retrieve `, `cart.remove()`, and `cart.empty()`. To do this you will be expanding on your Vuex store and utilizing Vuetify to build out a simple UI that visually demonstrates these methods.
+If you followed the previous guide you created a Nuxt application using `create-nuxt-app`, where you also created a Nuxt plugin for the Commerce.js SDK, and used that plugin to get your products and render them server-side by using the `nuxtServerInit` action. This guide is going to build off of the previous one and demonstrate how to use the following cart methods; `cart.add()`, `cart.retrieve()`, `cart.remove()`, and `cart.empty()`. To do this you will be expanding on your Vuex store and utilizing Vuetify to build out a simple UI that visually demonstrates these methods.
 
 ## This guide will cover
 
@@ -39,12 +39,15 @@ Basic knowldge of Nuxt.js and JavaScript are required for this guide, and some f
 
 ### (Optional) Product Variants
 
-This step is optional but can be useful if you haven't gotten a chance to dive deeply into your dashboard yet. A variant in this context, would be a product that you offer that may have multiple options for purchase. For example; If you were selling a shirt, and the shirt came in various sizes or colors, you'd have more than one variant of that shirt that you may want to be available for purchase. Your Chec dashboard makes that easily available for you to customize.
+This step is optional but can be useful if you haven't gotten a chance to dive deeply into your dashboard yet. A variant in this context, would be a product that you offer that may have multiple options for purchase. For example; If you were selling a shirt, and the shirt came in various sizes or colors, you'd have more than one variant of that shirt that you may want to make available for purchase. Your Chec dashboard makes that easily available for you to add and customize.
 
-![](https://i.imgur.com/t004PvU.png)
+![dashboard variant](https://i.imgur.com/t004PvU.png)
+
+### Variants array && Variant object:
+
 ![Variant data](https://i.imgur.com/bZBTiH3.png)
 
-### 2. Retrieving a cart
+### 2. Retrieving a cart && updating your Vuex store
 
 The first thing you'll want to do is revisit your Vuex store located at `store/index.js` and create an empty object in `state` named `cart` which is where all your data related to your cart will be. Next, to retrieve the cart you will go ahead and create an async action, `retrieveCart()`. This action will call `cart.retrieve()` and to retrieve your cart, or intialize a new one. Keep in mind that it is important that these actions are asynchronous and return promises or `nuxtServerInit()` will not work properly. Once those are done, you will want to build out three more actions; [addProductToCart](https://commercejs.com/docs/api/#add-item-to-cart): Adds a product to your cart, [removeProductFromCart](https://commercejs.com/docs/api/#remove-item-from-cart): Removes a product from the cart, (emptyCart)[https://commercejs.com/docs/api/#empty-cart]: Empties the cart. After your actions are complete, you will want to update the `nuxtServerInit()` action to dispatch both `getProducts` and `retrieveCart` and commit mutations to update the state with the returned data([cart.retrieve()](https://commercejs.com/docs/api/#retrieve-a-cart), [products.list()](https://commercejs.com/docs/api/#list-all-products)). After you finish that up, create your mutations which will be, `setProducts`: Sets your products in state, `setCart`: Called by multiple actions to set the `cart` object in state, and then `clearCart`: which will clear your cart object and set it back to it's default value(`{}`). And lastly, you'll want to create the following `getters` to easily retrieve your state from any component. A `cart` getter to retrieve your cart data, and one final getter for the `subtotal` property from the `cart` object called `cartSubtotal`.
 
@@ -194,9 +197,10 @@ export default {
 ```
 
 ### 4. Cart component
-This next step you will be utilizing two of the actions you created earlier in order to build out a cart component and display cart data using Vuetify. First, create your `Checkout.vue` component file in the `components/` directory. From there, you will get started with the `<script></script>` tag and build from there as the component's starting point. At the top import `mapActions` as you will need it for dispatching the actions required for this component. Inside of your export default, you should first start with the `name` property and make sure it matches the filename of the component. Following name, you will write out the props this component will be using. Start off with a `cart` prop which will just be an object type since that's the type it was given in your state. A `value` prop which is a boolean type and will be used for Vuetify's [v-navigation-drawer](https://vuetifyjs.com/en/components/navigation-drawers), the base of this component. For your methods, just use `...mapActions` so you can use your `removeProductFromCart` and `clearCart` actions.
+This next step you will be utilizing two of the actions you created earlier in order to build out a cart component and display cart data using Vuetify. First, create your `Checkout.vue` component file in the `components/` directory. From there, you will get started with the `<script></script>` tag and build from there as the component's starting point. At the top import `mapActions` as you will need it for dispatching the actions required for this component. Inside of your export default, you should first start with the `name` property and make sure it matches the filename of the component. Following name, you will write out the props this component will be using. Start off with a `cart` prop which will just be an object type since that's the type it was given in your state. A `value` prop will be a boolean type and used for Vuetify's [v-navigation-drawer](https://vuetifyjs.com/en/components/navigation-drawers), the base of this component. For your methods, use `...mapActions` so you can map the `removeProductFromCart`  action as `removeProduct()` and the `clearCart` action as `clearCart()` inside of your Checkout component.
 
 ```js
+// components/Checkout.vue
 <script>
 import { mapActions } from 'vuex'
 
@@ -222,163 +226,165 @@ export default {
 </script>
 ```
 
-![create-nuxt-app](https://i.imgur.com/SBuGk2Q.png)
+Here is the template that will be used inside of `components/Checkout.vue`, As you notice in `<v-navigation-drawer>` the `value` prop is bound to the navigation drawer's value, which determines it's open or closed state. There is also a [v-chip](https://vuetifyjs.com/en/components/chips/) component that emit's an event to it's parent when clicked called `closeDrawer`, which will being closing the navigation drawer. Inside of the `v-for` template there is a [v-icon](https://vuetifyjs.com/en/components/icons/) with a click event attached that calls the `removeProduct(product.id)` method and passes the `id` of the cart item to remove it. The last important component is the `v-btn` that calls the `clearCart` method when clicked and will entirely empty the cart. The rest of the template is up to you how you'd like to style it, as long as you keep in mind to utilize those methods and props. A full demonstrated Checkout component template is provided below.
 
-
-### 3. Installing Commerce.js
-
-Use the Commerce.js SDK to access the Chec API data from your application.
-
-#### Installing via SDK
+*** Note ***
+The demo link provided at the beginning of this guide uses this template in the checkout component.
 
 ```js
-// yarn
-yarn add @chec/commerce.js
+// components/Checkout.vue
 
-// npm
-npm install --save @chec/commerce.js
-```
-
-### 4. Create a minimal [Nuxt plugin](https://nuxtjs.org/guide/plugins#inject-into-vue-instances) with the Commerce.js SDK
-
-Create a new file in the plugins directory of your Nuxt app called `commerce.js`. You will begin this file by importing the Commerce.js SDK at the top of the file, followed by importing `Vue`. Next, inject the Commerce.js SDK with your API key into the `Vue` instance by setting a new property on the `Vue` instance called `$commerce`, which will allow you to access the Commerce.js SDK through Vue's instance globally. Once you've done this, all [features](https://commercejs.com/docs/overview/getting-started.html#features) of Commerce.js will be accessible on your `Vue` instance. Don't forget to add your new plugin's path to the plugins property located in the `nuxt.config.js` file of your project root so that Nuxt can inject it when building.
-
-
-```js
-// plugins/commerce.js
-import Commerce from '@chec/commerce.js'
-import Vue from 'vue'
-
-Vue.prototype.$commerce = new Commerce(process.env.COMMERCEJS_API_KEY, true)
-
-```
-
-```js
-// nuxt.config.js
-module.exports = {
-    // ...
-    css: [],
-    plugins: ['~/plugins/commerce.js'],
-    buildModules: [],
-    // ...
-}
-
-```
-
-### 5. Create a file in your store directory called `index.js`
-
-In your newly created `store/index.js` file you'll import `Vue` so that you can utilize your new plugin that has been injected into the `Vue` instance. Once this is done, create your Vuex store's state, which will contain an empty array of products by default. Next, you will create your store's actions, which will contain a special action specific to Nuxt.js - [nuxtServerInit()](https://nuxtjs.org/guide/vuex-store/#the-nuxtserverinit-action): This action gets called and fills your store with data on the server-side before rendering. This action is asynchronous and will wait for the list of products to be returned from the Chec API. Upon returned results, the action will commit the product data by calling the `setProducts` mutation and passing `products.data`, setting your state's products to the returned products list. The last little piece for the store is to write a getter that simply returns the state's list of products when called from your component. 
-
-```js
-// store/index.js
-import Vue from 'vue'
-
-export const state = () => ({
-  products: []
-})
-
-export const actions = {
-  async nuxtServerInit({ commit }) {
-    const products = await Vue.prototype.$commerce.products.list()
-
-    // Pass products.data 
-    commit('setProducts', products.data)
-  }
-}
-
-export const mutations = {
-  setProducts(state, payload) {
-    state.products = payload
-  }
-}
-
-export const getters = {
-  products() {
-    return state.products
-  }
-}
-```
-
-### 6. Create a `CommerceItem.vue` component file under your components directory.
-
-The `components/CommerceItem.vue` component will be used as a dynamic template to display the data for each item in your products list. First, create your script tag that exports a `name` and the `props` of your Vue component. Your component's `props` will contain a `product` object where you will explicitly set it's type and default key/value property pairs. Next, create a basic template that contains some Vuetify components that can be used as a starting point to style and render each individual product's data.
-
-```js
-// components/CommerceItem.vue
 <template>
-  <v-card max-width="300">
-    <v-card-title>
-      {{ product.name }}
-    </v-card-title>
+  <v-navigation-drawer
+    :value="value"
+    fixed
+    right
+    stateless
+    temporary
+    width="500"
+  >
+    <v-row class="d-flex my-8">
+      <v-icon class="ml-10 mr-2" color="#6C7C8F" dense>mdi-cart-outline</v-icon>
+      <span class="nav-text title">Cart</span>
 
-    <v-divider class="mb-3"></v-divider>
+      <v-chip class="ml-auto mr-10" outlined @click.stop="$emit('closeDrawer')">
+        Close Cart
+      </v-chip>
+    </v-row>
+    <v-divider></v-divider>
 
-    <v-img :src="product.media.source" />
+    <v-list>
+      <v-list-item
+        v-if="!cart.line_items || cart.line_items.length <= 0"
+        class="text-center mb-2"
+      >
+        <v-list-item-content>
+          <span class="subtitle-1 font-weight-light nav-text">
+            Cart is empty!
+          </span>
+        </v-list-item-content>
+      </v-list-item>
 
-    <v-divider class="mt-3 mb-1"></v-divider>
+      <template v-for="product in cart.line_items">
+        <v-list-item :key="product.product_id" class="mb-2">
+          <v-list-item-title>
+            {{ product.name }}
+          </v-list-item-title>
 
-    <v-card-action>
-      <span>${{ product.price.formatted }}</span>
-    </v-card-action>
-  </v-card>
+          <span class="mr-2">
+            {{ product.quantity }}
+          </span>
+          <span class="mr-2">
+            ${{ product.line_total.formatted || '0.00' }}
+          </span>
+          <v-icon @click.stop="removeProduct(product.id)">mdi-cancel</v-icon>
+        </v-list-item>
+      </template>
+
+      <v-divider></v-divider>
+
+      <v-list-item class="mt-2 mb-2">
+        <v-list-item-title>
+          <span class="nav-text subtitle-1 font-weight-medium">Subtotal</span>
+        </v-list-item-title>
+
+        <span v-if="cart.subtotal" class="mr-1 nav-text">
+          ${{ cart.subtotal.formatted }}
+        </span>
+        <span v-else class="mr-1 nav-text">${{ subtotal }}</span>
+        <v-chip class="text-center" color="green" label outlined small
+          >USD</v-chip
+        >
+
+        <v-btn class="ml-3" color="red" label outlined small @click="clearCart">
+          Clear
+        </v-btn>
+      </v-list-item>
+
+      <v-divider></v-divider>
+
+      <v-list-item class="justify-center">
+        <v-btn
+          color="green"
+          class="white--text mt-10"
+          :disabled="disabled"
+          x-large
+        >
+          <v-icon small>mdi-lock</v-icon>
+          <span>Secure Checkout</span>
+        </v-btn>
+      </v-list-item>
+    </v-list>
+  </v-navigation-drawer>
 </template>
-
-<script>
-export default {
-  name: 'CommerceItem',
-  props: {
-    product: {
-      type: Object,
-      default: () => ({
-        id: '',
-        media: null,
-        name: '',
-        price: ''
-      })
-    }
-  }
-}
-<script>
 ```
 
-### 7. Use the `CommerceItem.vue` component and Vuex's mapGetters to display your product list.
+### 5. Importing and using Checkout.vue
 
-Inside your pages directory should live an `index.vue` file, if you used **create-nuxt-app** then you'll want to delete all the default filler code provided by the CLI. Inside of the component's script tag import the `mapState` function, followed by the `CommerceItem.vue` component and be sure to add `CommerceItem` to the `components` property of `components/index.vue`. 
+Since you just created a `Checkout.vue` component, it is time to use it in your application. To do that go to your `pages/index.vue` and add the component to your import's like so: `import Checkout from '~/components/Checkout`, be sure to add `Checkout` to your `index.vue`'s `components` property to correctly register the component. While you are doing imports, it would also be a good time to import the [mapGetters](https://vuex.vuejs.org/guide/getters.html#the-mapgetters-helper) function to map and access your store's getters that were created earlier in this guide. Another addition to this file, will be the [data](https://vuejs.org/v2/guide/instance.html#Data-and-Methods) object which will contain a boolean named `drawer` that will dictate the state of the `Checkout.vue` drawer. The last bit for the script tag is to add the `computed` property and utilize `...mapGetters` to map your `product`, `cart`, and `cartSubtotal` getters that you created earlier as computed properties. 
 
-Next, we will utilize the `...mapGetters` function inside of the component's `computed()` properties, and use the `products` getter to return your products in state. Finally, create a simple template that uses Vue's `v-for` directive to dynamically render each of your store's products.
+Now that your components script tag is updated, add the `<checkout />` component element to the template and be sure to set the [v-model](https://vuejs.org/v2/guide/forms.html) attribute to the `drawer` data property and add a `@closeDrawer` listener that sets `drawer` to the opposite of it's current boolean value when `closeDrawer` is emitted from the button you created in the previous section for `Checkout.vue`. The last step for this page component will be to create a button that will activate your Checkout drawer when clicked. For this create a `<v-btn>` and add a `@click` event that will set `drawer` in the data object to it's opposite value. 
 
 ```js
 // pages/index.vue
 <template>
   <v-layout column justify-center align-center>
     <v-flex xs12 sm8 md6>
+      <v-row class="d-flex justify-end">
+        <v-btn fixed right @click.stop="drawer = !drawer">
+          <v-icon class="mr-4">mdi-cart-outline</v-icon>
+          <span class="mx-2">items</span>
+          <span v-if="subtotal" class="mx-2">${{ subtotal }}</span>
+          <span v-else class="mx-2">$0.00</span>
+        </v-btn>
+      </v-row>
+
+      <v-col class="text-center ma-5">
+        <span class="display-1">Demo Merchant</span>
+      </v-col>
+
       <v-row>
         <template v-for="product in products">
-          <v-col :key="product.id">
+          <v-col :key="product.id" class="mt-5">
             <commerce-item :key="product.id" :product="product" />
           </v-col>
         </template>
       </v-row>
     </v-flex>
+
+    <checkout v-model="drawer" :cart="cart" @closeDrawer="drawer = !drawer" />
   </v-layout>
-<template>
+</template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapGetters } from 'vuex'
+import Checkout from '~/components/Checkout'
 import CommerceItem from '~/components/CommerceItem'
 
 export default {
   components: {
+    Checkout,
     CommerceItem
   },
+  data: () => ({
+    drawer: false
+  }),
   computed: {
-    ...mapGetters({ products: 'products' })
+    ...mapGetters({
+      products: 'products',
+      cart: 'cart',
+      subtotal: 'cartSubtotal'
+    })
   }
 }
 </script>
 ```
 
-### 8. Run your app!
+***With the previous steps put together you should have something pretty close to this:***
+
+![Checkout.vue](https://i.imgur.com/xa1aKg3.png)
+
+### 6. Run your app!
 
 You should now be able to run your Nuxt application and see the products from your store display.
 
@@ -393,14 +399,13 @@ npm run dev
 [Live Demo](https://commercejs-nuxt-demo.herokuapp.com/)
 
 ## Conclusion
-Nice work, you've successfully listed your products out using Nuxt.js.
+Nice work, you've successfully added and removed products from a cart, cleared a cart, and created a nice Checkout component.
 
 Let's review what we have accommplished in this guide.
 
-* Created a Chec account and added products
-* Initialized a Nuxt application
-* Injected a simple Vue plugin utilizing Commerce.js SDK
-* Created a simple Vuex store and rendered your data server-side using nuxtServerInit()
+* Learned how to add product variants in your Chec dashboard.
+* Expanded your vuex store to include adding and removing a product from the cart, emptying your cart, and retrieving cart data server-side. 
+* Created a navigation drawer Checkout component to display cart data and manipulate the cart's items.
 * Listed your products in your Nuxt application
 
 ## Built With
