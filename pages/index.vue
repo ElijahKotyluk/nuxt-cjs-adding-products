@@ -46,9 +46,6 @@ export default {
       cart: 'cart',
       subtotal: 'cartSubtotal'
     })
-  },
-  mounted() {
-    this.$store.dispatch('getCart')
   }
 }
 </script>

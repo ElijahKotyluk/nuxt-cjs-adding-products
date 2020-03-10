@@ -39,7 +39,7 @@
             {{ product.quantity }}
           </span>
           <span class="mr-2">
-            ${{ product.line_total.formatted || '0.00' }}
+            {{ product.line_total.formatted_with_symbol || '0.00' }}
           </span>
           <v-icon @click.stop="removeProduct(product.id)">mdi-cancel</v-icon>
         </v-list-item>
@@ -53,7 +53,7 @@
         </v-list-item-title>
 
         <span v-if="cart.subtotal" class="mr-1 nav-text">
-          ${{ cart.subtotal.formatted }}
+          ${{ cart.subtotal.formatted_with_symbol }}
         </span>
         <span v-else class="mr-1 nav-text">${{ subtotal }}</span>
         <v-chip class="text-center" color="green" label outlined small

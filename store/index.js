@@ -9,14 +9,14 @@ export const state = () => ({
 // Actions
 export const actions = {
   async nuxtServerInit({ dispatch }) {
-    const products = await dispatch('retrieveProducts')
+    const products = await dispatch('getProducts')
 
     if (products) {
-      await dispatch('getCart')
+      await dispatch('retrieveCart')
     }
   },
 
-  async retrieveProducts({ commit }) {
+  async getProducts({ commit }) {
     const products = await Vue.prototype.$commerce.products.list()
 
     if (products) {
@@ -24,7 +24,7 @@ export const actions = {
     }
   },
 
-  async getCart({ commit }) {
+  async retrieveCart({ commit }) {
     const cart = await Vue.prototype.$commerce.cart.retrieve()
 
     if (cart) {

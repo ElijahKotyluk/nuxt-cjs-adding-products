@@ -54,7 +54,7 @@
 
       <v-spacer></v-spacer>
 
-      <span class="ml-2">${{ product.price.formatted }}</span>
+      <span class="ml-2">{{ product.price.formatted_with_symbol }}</span>
     </v-card-actions>
 
     <product-details

@@ -9,7 +9,9 @@
       <v-card-title>
         <span>{{ product.name }} -</span>
         <v-spacer></v-spacer>
-        <span class="green--text">${{ product.price.formatted }}</span>
+        <span class="green--text">
+          {{ product.price.formatted_with_symbol }}
+        </span>
       </v-card-title>
 
       <v-divider></v-divider>
