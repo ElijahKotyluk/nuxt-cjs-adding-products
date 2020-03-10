@@ -2,7 +2,7 @@
 
 This guide illustrates how to create and add products to your cart using Nuxt.
 
-[Live Demo](https://commercejs-nuxt-demo.herokuapp.com/)
+[Live Demo](https://cjs-adding-products.herokuapp.com/)
 
 ***** *Note* *****
 
@@ -11,16 +11,13 @@ This guide illustrates how to create and add products to your cart using Nuxt.
 ![](assets/CommerceJS_NuxtJS_Storefront.png)
 
 ## Overview
-The purpose of this guide is to help developers get familiar with using the Commerce.js SDK in conjunction with Nuxt.js. Commerce.js is a powerful eCommerce tool that gives you the ability to build custom eCommerce sites without the trouble of building out a lot of the complex functionality that comes with eCommerce projects. Commerce.js makes it easy for developers of all levels to build a fully customized online store. 
-
-## Recap
-If you followed the previous guide then you created a Nuxt application that utilizes 
+If you followed the previous guide you created a Nuxt application using `create-nuxt-app`, where you also created a Nuxt plugin for the Commerce.js SDK, and used that plugin to get your products and render them server-side by using the `nuxtServerInit` action. This guide is going to build off of the previous one and demonstrate how to use the following cart methods; `cart.add()`, `cart.retrieve `, `cart.remove()`, and `cart.empty`. To do this you will be expanding on your Vuex store and utilizing Vuetify to build out a simple UI that visually demonstrates these methods.
 
 ## This guide will cover
 
 1. (Optional) Creating variants of a product in your Chec Dashboard
-2. Building a simple UI to accomodate a product cart
-3. Manipulate your cart by adding and removing products
+2. Adding / Removing products from a cart
+3. Listing cart items and clearing a cart
 
 ## Requirements
 
@@ -45,8 +42,106 @@ Basic knowldge of Nuxt.js and JavaScript are required for this guide, and some f
 This step is optional but can be useful if you haven't gotten a chance to dive deeply into your dashboard yet. A variant in this context, would be a product that you offer that may have multiple options for purchase. For example; If you were selling a shirt, and the shirt came in various sizes or colors, you'd have more than one variant of that shirt that you may want to be available for purchase. Your Chec dashboard makes that easily available for you to customize.
 
 ![](https://i.imgur.com/t004PvU.png)
+[Variant]()
 
-### 2. Initializing a Nuxt project
+### 2. Retrieving a cart
+
+The first thing you'll want to do is revisit your Vuex store located at `store/index.js` and create an empty object in `state` named `cart` which is where all your data related to your cart will be. Next, to retrieve the cart you will go ahead and create an async action, `retrieveCart()`. This action will call `cart.retrieve()` and to retrieve your cart, or intialize a new one. Keep in mind that it is important that these actions are asynchronous and return promises or `nuxtServerInit()` will not work properly. Once those are done, you will want to update the `nuxtServerInit()` action to dispatch both `getProducts` and `retrieveCart` and commit mutations to update the state with the returned data([cart.retrieve()](https://commercejs.com/docs/api/#retrieve-a-cart), [products.list()](https://commercejs.com/docs/api/#list-all-products)). After you finish that up, create your mutations which will be, `setProducts`: Which sets your products in state, `setCart`: which is called by multiple actions to set the `cart` object in state, and then `clearCart`: which will of course clear your cart object and set it back to it's default value(Empty object). 
+And lastly, you'll want to create the following `getters` to easily retrieve your state from any component. A `products` getter, to return your products array from state, a `cart` getter to retrieve your cart data, and one final getter for the `subtotal` property from the `cart` object called `cartSubtotal`.
+
+```js
+// store/index.js
+
+// State
+export const state = {
+  products: [],
+  cart: {}
+}
+
+// Actions
+export const actions = {
+  async nuxtServerInit({ dispatch }) {
+    const products = await dispatch('getProducts')
+
+    if (products) {
+      await dispatch('retrieveCart')
+    }
+  },
+
+  async getProducts({ commit }) {
+    const products = await Vue.prototype.$commerce.products.list()
+
+    if (products) {
+      commit('setProducts', products.data)
+    }
+  },
+
+  async retrieveCart({ commit }) {
+    const cart = await Vue.prototype.$commerce.cart.retrieve()
+
+    if (cart) {
+      commit('setCart', cart)
+    }
+  },
+
+  async addProductToCart({ commit }, { id, count }) {
+    const addProduct = await Vue.prototype.$commerce.cart.add(id, (count += 1))
+
+    if (addProduct) {
+      commit('setCart', addProduct.cart)
+    }
+  },
+
+  async removeProductFromCart({ commit }, payload) {
+    const removeProduct = await Vue.prototype.$commerce.cart.remove(payload)
+
+    if (removeProduct) {
+      commit('setCart', removeProduct.cart)
+    }
+  },
+
+  async clearCart({ commit }) {
+    const clear = await Vue.prototype.$commerce.cart.empty()
+
+    if (clear) {
+      commit('clearCart')
+    }
+  }
+}
+
+// Mutations
+export const mutations = {
+  setProducts(state, payload) {
+    state.products = payload
+  },
+
+  setCart(state, payload) {
+    state.cart = payload
+  },
+
+  clearCart(state) {
+    state.cart = {}
+  }
+}
+
+// Getters
+export const getters = {
+  products(state) {
+    return state.products
+  },
+
+  cart(state) {
+    return state.cart
+  },
+
+  cartSubtotal(state) {
+    if (state.cart.subtotal) {
+      return state.cart.subtotal.formatted
+    }
+  }
+}
+
+```
 
 To get started with Nuxt, I recommended checking out their [installation guide](https://nuxtjs.org/guide/installation/) and using the [create-nuxt-app](https://github.com/nuxt/create-nuxt-app) scaffolding tool to quickly spin up your project. Below I will list the options I chose when creating this guide.
 
