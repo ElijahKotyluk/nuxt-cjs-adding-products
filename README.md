@@ -228,11 +228,10 @@ export default {
 Here is the template that will be used inside of `components/Checkout.vue`, As you notice in `<v-navigation-drawer>` the `value` prop is bound to the navigation drawer's value, which determines it's open or closed state. There is also a [v-chip](https://vuetifyjs.com/en/components/chips/) component that emit's an event to it's parent when clicked called `closeDrawer`, which will being closing the navigation drawer. Inside of the `v-for` template there is a [v-icon](https://vuetifyjs.com/en/components/icons/) with a click event attached that calls the `removeProduct(product.id)` method and passes the `id` of the cart item to remove it. The last important component is the `v-btn` that calls the `clearCart` method when clicked and will entirely empty the cart. The rest of the template is up to you how you'd like to style it, as long as you keep in mind to utilize those methods and props. A full demonstrated Checkout component template is provided below.
 
 *** Note ***
-The demo link provided at the beginning of this guide uses this template in the checkout component.
+The demo link provided at the beginning and end of this guide utilizes this template in the checkout component.
 
 ```js
 // components/Checkout.vue
-
 <template>
   <v-navigation-drawer
     :value="value"
