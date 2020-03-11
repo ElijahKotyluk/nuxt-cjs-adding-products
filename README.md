@@ -1,6 +1,6 @@
-# Adding products in a catalogue with Nuxt.js and Commerce.js
+# Adding products to a cart with Nuxt.js and Commerce.js
 
-This guide illustrates how to create a cart and add products to your cart using Nuxt.
+This guide illustrates how to create a cart and add products to a cart using Nuxt.
 
 [Live Demo](https://cjs-adding-products.herokuapp.com/)
 
