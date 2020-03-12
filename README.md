@@ -408,7 +408,7 @@ Let's review what we have accommplished in this guide.
 
 As you can see, the Commerce.js SDK makes managing a cart straightforward and easy, the only thing left for you to do is style the layout how you see fit.
 
-This guide continues from (Listing products in a catalogue with Nuxt.js and Commerce.js)[https://github.com/ElijahKotyluk/commercejs-nuxt-demo]
+This guide continues from (Listing products in a catalogue with Nuxt.js and Commerce.js)[Listing Products in a Catalogue](https://github.com/ElijahKotyluk/commercejs-nuxt-demo)
 
 ## Built With
 
