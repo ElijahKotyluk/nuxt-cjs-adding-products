@@ -1,5 +1,7 @@
 # Adding products to a cart with Nuxt.js and Commerce.js
 
+This guide continues from (Listing products in a catalogue with Nuxt.js and Commerce.js)[Listing Products in a Catalogue](https://github.com/ElijahKotyluk/commercejs-nuxt-demo)
+
 This guide illustrates how to create a cart and add products to a cart using Nuxt.
 
 [Live Demo](https://cjs-adding-products.herokuapp.com/)
@@ -21,7 +23,7 @@ If you followed the previous guide you created a Nuxt application using `create-
 
 ## Requirements
 
-- IDE of your choice
+- IDE of your choice: VS Code is not required, you can use something lightweight like [Atom Code Editor](https://atom.io/) or [Sublime Text](https://www.sublimetext.com/).
 - [Commerce.js SDK](https://github.com/chec/commerce.js)
 - Yarn or npm
 - [Nuxt.js](https://nuxtjs.org/)
@@ -31,9 +33,10 @@ If you followed the previous guide you created a Nuxt application using `create-
 ## Prerequisites
 Basic knowldge of Nuxt.js and JavaScript are required for this guide, and some familiarity with Vuetify would help.
 
-- Nuxt.js
-- JavaScript(ES6)
-- Vuetify.js
+- Nuxt.js v2
+- JavaScript(ES7)
+- Vuetify.js v2.2.15
+- Vue.js
 
 ## Getting started
 
@@ -44,6 +47,7 @@ This step is optional but can be useful if you haven't gotten a chance to dive d
 ![dashboard variant](https://i.imgur.com/t004PvU.png)
 
 ### Variants array && Variant object:
+The `variants` property is an array that contains a list of `variant` objects. Each variant object describes a different variant you have in your Chec dashboard. 
 
 ![Variant data](https://i.imgur.com/bZBTiH3.png)
 
