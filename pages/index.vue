@@ -2,7 +2,7 @@
   <v-layout column justify-center align-center>
     <v-flex xs12 sm8 md6>
       <v-row class="d-flex justify-end">
-        <v-btn fixed right @click.stop="drawer = !drawer">
+        <v-btn class="drawer-btn" fixed right @click.stop="drawer = !drawer">
           <v-icon class="mr-4">mdi-cart-outline</v-icon>
           <span class="mx-2">items</span>
           <span v-if="subtotal" class="mx-2">${{ subtotal }}</span>
@@ -49,3 +49,9 @@ export default {
   }
 }
 </script>
+
+<style>
+.drawer-btn {
+  z-index: 5;
+}
+</style>
