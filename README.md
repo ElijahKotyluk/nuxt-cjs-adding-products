@@ -44,10 +44,12 @@ Basic knowldge of Nuxt.js and JavaScript are required for this guide, and some f
 
 This step is optional but can be useful if you haven't gotten a chance to dive deeply into your dashboard yet. A variant in this context, would be a product that you offer that may have multiple options for purchase. For example; If you were selling a shirt, and the shirt came in various sizes or colors, you'd have more than one variant of that shirt that you may want to make available for purchase. Your Chec dashboard makes that easily available for you to add and customize.
 
-![dashboard variant](https://i.imgur.com/t004PvU.png)
+![Add variant with dashboard](https://i.imgur.com/t004PvU.png)
 
-### Variants array && Variant object:
-The `variants` property is an array that contains a list of `variant` objects. Each variant object describes a different variant you have in your Chec dashboard. 
+<img src="https://i.imgur.com/4XSfbKl.png" alt="Product Variamt" width="300" height="450">
+
+### Variants property and Variant object:
+The `variants` property is an array that contains a list of `variant` objects, you will find the `variants` array as a property on the [Product](https://commercejs.com/docs/api/#products) object. Each variant describes a different variant you have in your Chec dashboard. Variants can also be specific when [adding an item to your cart](https://commercejs.com/docs/api/#add-item-to-cart).
 
 ![Variant data](https://i.imgur.com/bZBTiH3.png)
 
